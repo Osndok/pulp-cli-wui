@@ -106,8 +106,14 @@ class Pulp
     public
     String getLeftNavWidth()
     {
-        // TODO: consider deriving navigation width based on longest subcommand
-        return topName.length() + "em";
+        var max = topName.length();
+
+        for (String subCommand : helpDocs.subCommands)
+        {
+            max = Math.max(max, subCommand.length());
+        }
+
+        return max + "em";
     }
 
     public

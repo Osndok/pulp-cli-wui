@@ -38,7 +38,9 @@
 
     <!-- default iframe contents -->
     <t:block t:id="defaultIframeBlock">
-        TODO: main stuff (like help text) goes here.
+        <pre>
+${helpDocs.mainBody}
+        </pre>
     </t:block>
 
     <!-- Right content area -->
