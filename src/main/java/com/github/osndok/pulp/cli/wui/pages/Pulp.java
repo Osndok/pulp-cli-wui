@@ -1,12 +1,17 @@
 package com.github.osndok.pulp.cli.wui.pages;
 
 import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
+import org.apache.tapestry5.Block;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.PartialTemplateRenderer;
 import org.apache.tapestry5.util.TextStreamResponse;
 import org.slf4j.Logger;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +46,14 @@ class Pulp
     @Inject
     private
     ColorPatternService colorPatternService;
+
+    @Inject
+    private
+    PartialTemplateRenderer partialTemplateRenderer;
+
+    @Inject
+    private
+    Block defaultIframeBlock;
 
     public
     Object onActivate(EventContext context)
@@ -111,5 +124,11 @@ class Pulp
     {
         // TODO: consider deriving navigation width based on longest subcommand
         return topName.length() + "em";
+    }
+
+    public
+    String getDefaultIframeContents()
+    {
+        return partialTemplateRenderer.render(defaultIframeBlock);
     }
 }

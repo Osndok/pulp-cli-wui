@@ -37,12 +37,17 @@
 
     </nav>
 
+    <!-- default iframe contents -->
+    <t:block t:id="defaultIframeBlock">
+        TODO: main stuff (like help text) goes here.
+    </t:block>
+
     <!-- Right content area -->
     <main style="flex:1;display:flex;flex-direction:column;background:#fff;">
       <div style="flex:1;min-height:0;">
         <iframe xid="contentFrame" name="${contentFrame}"
                 style="width:100%;height:100%;border:0;display:block;"
-                src="${initialIframeHelpLink}">
+                srcdoc="${defaultIframeContents}">
           Your browser does not support iframes.
         </iframe>
       </div>
