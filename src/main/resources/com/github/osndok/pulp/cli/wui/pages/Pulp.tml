@@ -23,15 +23,14 @@
           using the current subCommand value.
         -->
         <t:loop source="subCommands" value="subCommand">
-          <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(0,0,0,0.04);background: ${subCommandBgColor};">
+          <a href="${subCommandLink}" title="${subCommand}" target="${contentFrame}" style="text-decoration:none;color:#222;display:block;padding:4px 0;background: ${subCommandBgColor};">
+            <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(0,0,0,0.04);">
 
-            <!-- link computed on the server per-current subCommand; targets iframe -->
-            <div style="flex:1;font-size:14px;">
-              <a href="${subCommandLink}" target="${contentFrame}" style="text-decoration:none;color:#222;display:block;padding:4px 0;">
+              <div style="flex:1;font-size:14px;">
                 ${subCommand}
-              </a>
+              </div>
             </div>
-          </div>
+          </a>
         </t:loop>
       </div>
 
