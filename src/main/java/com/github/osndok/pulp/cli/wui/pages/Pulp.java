@@ -9,12 +9,14 @@ import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.apache.tapestry5.services.PartialTemplateRenderer;
 import org.apache.tapestry5.util.TextStreamResponse;
 import org.slf4j.Logger;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +54,10 @@ class Pulp
     @Inject
     private
     HelpDocsService helpDocsService;
+
+    @Inject
+    private
+    PageRenderLinkSource pageRenderLinkSource;
 
     @Inject
     private
@@ -97,10 +103,15 @@ class Pulp
     }
 
     public
-    String getSubCommandLink()
+    Object getSubCommandLink()
     {
-        // TODO: derive link from this.subCommand
-        return "#";
+        // Create a new array with one extra slot
+        Object[] newContext = Arrays.copyOf(commandSegments, commandSegments.length + 1);
+
+        // Add the new parameter
+        newContext[newContext.length - 1] = subCommand;
+
+        return pageRenderLinkSource.createPageRenderLinkWithContext(Pulp.class, newContext);
     }
 
     public
@@ -113,7 +124,7 @@ class Pulp
             max = Math.max(max, subCommand.length());
         }
 
-        return max + "em";
+        return (max*3/4) + "em";
     }
 
     public
