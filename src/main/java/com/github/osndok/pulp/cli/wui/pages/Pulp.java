@@ -1,5 +1,6 @@
 package com.github.osndok.pulp.cli.wui.pages;
 
+import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -37,12 +38,16 @@ class Pulp
     private
     String contentFrame;
 
+    @Inject
+    private
+    ColorPatternService colorPatternService;
+
     public
     Object onActivate(EventContext context)
     {
         commandSegments = extractCommandSegments(context);
         topName = commandSegments.get(commandSegments.size()-1);
-        subCommands = List.of("one", "two", "three");
+        subCommands = List.of("one", "two", "three", "four", "five", "six", "seven");
         contentFrame = "frame" + UUID.randomUUID().toString().hashCode();
 
         if (topName.equals("--help"))
@@ -73,10 +78,18 @@ class Pulp
     }
 
     public
+    String getPrimaryBgColor()
+    {
+        //return "#f7f7f7";
+        return colorPatternService.getCssColorFor(topName);
+    }
+
+    public
     String getSubCommandBgColor()
     {
         // TODO: derive color from this.subCommand
-        return "aliceblue";
+        //return "aliceblue";
+        return colorPatternService.getCssColorFor(subCommand);
     }
 
     public
