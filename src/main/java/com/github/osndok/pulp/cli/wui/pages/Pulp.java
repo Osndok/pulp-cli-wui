@@ -1,6 +1,8 @@
 package com.github.osndok.pulp.cli.wui.pages;
 
+import com.github.osndok.pulp.cli.wui.model.HelpDocs;
 import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
+import com.github.osndok.pulp.cli.wui.services.HelpDocsService;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
@@ -29,11 +31,11 @@ class Pulp
 
     @Property
     private
-    List<String> commandSegments;
+    String[] commandSegments;
 
     @Property
     private
-    List<String> subCommands;
+    HelpDocs helpDocs;
 
     @Property
     private
@@ -49,6 +51,10 @@ class Pulp
 
     @Inject
     private
+    HelpDocsService helpDocsService;
+
+    @Inject
+    private
     PartialTemplateRenderer partialTemplateRenderer;
 
     @Inject
@@ -58,36 +64,21 @@ class Pulp
     public
     Object onActivate(EventContext context)
     {
-        commandSegments = extractCommandSegments(context);
-        topName = commandSegments.get(commandSegments.size()-1);
-        subCommands = List.of("one", "two", "three", "four", "five", "six", "seven");
+        commandSegments = context.toStrings();
+
+        if (commandSegments.length == 0)
+        {
+            topName = "pulp";
+        }
+        else
+        {
+            topName = commandSegments[commandSegments.length - 1];
+        }
+
+        helpDocs = helpDocsService.getHelpDocsFor(commandSegments);
         contentFrame = "frame" + UUID.randomUUID().toString().hashCode();
 
-        if (topName.equals("--help"))
-        {
-            var message = new StringBuilder("Exec? ");
-            message.append(String.join(" ", commandSegments));
-            return new TextStreamResponse("text/plain", message.toString());
-        }
-
         return null;
-    }
-
-    private static
-    List<String> extractCommandSegments(final EventContext context)
-    {
-        var retval = new ArrayList<String>();
-        retval.add("pulp");
-        int count = context.getCount();
-
-        for (int i = 0; i < count; i++)
-        {
-            // read typed value; for plain path segments use String.class
-            String segment = context.get(String.class, i);
-            retval.add(segment);
-        }
-
-        return retval;
     }
 
     public
@@ -110,13 +101,6 @@ class Pulp
     {
         // TODO: derive link from this.subCommand
         return "#";
-    }
-
-    public
-    String getInitialIframeHelpLink()
-    {
-        // TODO: derive color from initial link pluss "--help" parameter
-        return "about:mozilla";
     }
 
     public

@@ -1,6 +1,7 @@
 package com.github.osndok.pulp.cli.wui.services;
 
 import com.github.osndok.pulp.cli.wui.services.impl.ColorPatternServiceImpl;
+import com.github.osndok.pulp.cli.wui.services.impl.HelpDocsServiceImpl;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.commons.OrderedConfiguration;
@@ -29,6 +30,7 @@ public class AppModule {
 
     public static void bind(ServiceBinder binder) {
         binder.bind(ColorPatternService.class, ColorPatternServiceImpl.class);
+        binder.bind(HelpDocsService.class, HelpDocsServiceImpl.class);
 
         // Make bind() calls on the binder object to define most IoC services.
         // Use service builder methods (example below) when the implementation
