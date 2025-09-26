@@ -8,7 +8,6 @@ import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
-import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.commons.services.PropertyAccess;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -17,10 +16,9 @@ import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public abstract
-class BasicFormBasedExecution
+class BasicFormBasedExecution extends BasePage
 {
     public abstract Object getCommandObject();
 
@@ -30,22 +28,7 @@ class BasicFormBasedExecution
 
     @Property
     private
-    HelpDocs helpDocs;
-
-    @Property
-    private
-    String topName;
-
-    @Property
-    private
     BeanModel beanModel;
-
-    private
-    String[] subCommandChain;
-
-    @Inject
-    private
-    HelpDocsService helpDocsService;
 
     @Inject
     private
@@ -66,17 +49,7 @@ class BasicFormBasedExecution
     public final
     Object onActivate()
     {
-        // e.g. pageName = "pulp/rpm/remote/Create"
-        String[] segments = componentResources.getPageName().split("/");
-        subCommandChain = Arrays.stream(segments, 1, segments.length)
-                .map(String::toLowerCase)
-                .toArray(String[]::new);
-        topName = subCommandChain[subCommandChain.length-1];
-
-        log.debug("onActivate(): object: {} ", getCommandObject());
-
         var commandObject = getCommandObject();
-        helpDocs = helpDocsService.getHelpDocsFor(subCommandChain);
 
         // Any way to get our sub-page's messages, instead of ours?
         var messages = componentResources.getMessages();
@@ -92,12 +65,13 @@ class BasicFormBasedExecution
     public
     String getPrimaryBgColor()
     {
-        return colorPatternService.getCssColorFor(topName);
+        return colorPatternService.getCssColorFor(getTopName());
     }
 
     public final
     Object onSuccess() throws Exception
     {
+        var subCommandChain = getSubCommandChain();
         log.debug("onSuccess(): {}", subCommandChain);
 
         var outputStream = new ByteArrayOutputStream();
