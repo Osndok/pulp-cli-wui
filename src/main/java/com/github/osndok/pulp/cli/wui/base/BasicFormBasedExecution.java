@@ -4,14 +4,20 @@ import com.github.osndok.pulp.cli.wui.model.HelpDocs;
 import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
 import com.github.osndok.pulp.cli.wui.services.HelpDocsService;
 import org.apache.tapestry5.ComponentResources;
+import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.commons.services.PropertyAccess;
+import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.util.TextStreamResponse;
+import org.buildobjects.process.ProcBuilder;
 import org.slf4j.Logger;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public abstract
@@ -92,9 +98,20 @@ class BasicFormBasedExecution
     }
 
     public final
-    Object onSuccess()
+    Object onSuccess() throws Exception
     {
-        log.debug("onSuccess(): {}", componentResources.getPageName());
+        log.debug("onSuccess(): {}", subCommandChain);
+
+        var outputStream = new ByteArrayOutputStream();
+        var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        var out = new PrintWriter(writer);
+
+        out.print("Getting ready to execute:\npulp");
+        var procBuilder = new ProcBuilder("pulp")
+                // TODO: We should capture the stdout separately, and parse or beautify the json.
+                .withOutputStream(outputStream)
+                .withErrorStream(outputStream)
+                .withArgs(subCommandChain);
 
         var commandObject = getCommandObject();
         log.info("onSuccess() w/ subCommandChain: {} & commandObject:{}", subCommandChain, commandObject);
@@ -102,11 +119,54 @@ class BasicFormBasedExecution
         for (String propertyName : adapter.getPropertyNames())
         {
             var value = adapter.get(commandObject, propertyName);
+            if (value == null || propertyName.equals("class")) {
+                continue;
+            }
             // Intent is to transform "some_thing" into "--some-thing"
-            var transformed = "--" + propertyName.toString().replace("_", "-");
+            var transformed = "--" + propertyName.replace("_", "-");
             log.debug("{}: {} {}", propertyName, transformed, value);
+
+            // TODO: we need something more elaborate to transform "stuff" into string values for CLI execution
+            String string = value.toString();
+
+            procBuilder.withArg(transformed);
+            procBuilder.withArg(string);
+            out.print(' ');
+            out.print(transformed);
+            out.print(' ');
+            out.print(string);
         }
 
-        return getNextPage();
+        //???: return getNextPage();
+
+        out.println("\n");
+        out.flush();
+        writer.flush();
+
+        var result = procBuilder.ignoreExitStatus().run();
+        var exitValue = result.getExitValue();
+
+        out.println("\nExit status ");
+        out.print(exitValue);
+
+        out.flush();
+        writer.flush();
+
+        byte[] data = outputStream.toByteArray();
+
+        return new StreamResponse() {
+            public String getContentType() {
+                return "text/plain; charset=UTF-8";
+            }
+
+            public void prepareResponse(Response response) {
+                // Optionally set headers
+            }
+
+            public InputStream getStream() throws IOException {
+                return new ByteArrayInputStream(data);
+            }
+        };
+
     }
 }
