@@ -8,7 +8,9 @@ import org.apache.tapestry5.beanmodel.internal.beanmodel.PropertyModelImpl;
 import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.json.JSONObject;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public
 class JsonBeanModel implements BeanModel<JSONObject>
@@ -17,14 +19,18 @@ class JsonBeanModel implements BeanModel<JSONObject>
     List<String> propertyNames;
 
     private final
+    Set<String> unsortable;
+
+    private final
     Messages messages;
 
     public
-    JsonBeanModel(final List<String> propertyNames, final Messages messages)
+    JsonBeanModel(final List<String> propertyNames, final Set<String> unsortable, final Messages messages)
     {
         if (messages == null) throw new NullPointerException("messages");
 
         this.propertyNames = propertyNames;
+        this.unsortable = unsortable;
         this.messages = messages;
     }
 
@@ -54,7 +60,11 @@ class JsonBeanModel implements BeanModel<JSONObject>
     PropertyModel get(final String fieldName)
     {
         var conduit = new JsonPropertyConduit(fieldName);
-        return new PropertyModelImpl(this, fieldName, conduit, messages);
+        var model = new PropertyModelImpl(this, fieldName, conduit, messages);
+        if (unsortable.contains(fieldName)) {
+            model.sortable(false);
+        }
+        return model;
     }
 
     @Override

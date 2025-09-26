@@ -20,7 +20,7 @@ class JsonPropertyConduit implements PropertyConduit
     public
     Object get(final Object o)
     {
-        return ((JSONObject)o).get(fieldName);
+        return ((JSONObject)o).getOrDefault(fieldName, null);
     }
 
     @Override

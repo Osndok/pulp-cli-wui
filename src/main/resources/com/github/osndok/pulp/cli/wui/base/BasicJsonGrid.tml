@@ -16,8 +16,12 @@
             ${helpDocs.mainBody}
         </pre>
 
-        <t:grid source="gridDataSource" model="beanModel"/>
+        <t:grid source="gridDataSource" row="row" model="beanModel" overrides="actionOverrides"/>
     </div>
+
+   <t:block id="actionCell">
+     <t:eventlink t:event="${action}" t:context="prop:actionContext">${action}</t:eventlink>
+   </t:block>
 
 </body>
 </html>
