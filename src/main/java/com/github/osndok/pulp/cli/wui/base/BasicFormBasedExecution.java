@@ -42,10 +42,6 @@ class BasicFormBasedExecution extends BasePage
     private
     BeanModelSource beanModelSource;
 
-    @Inject
-    private
-    ColorPatternService colorPatternService;
-
     public final
     Object onActivate()
     {
@@ -60,12 +56,6 @@ class BasicFormBasedExecution extends BasePage
         beanModel = beanModelSource.createEditModel(commandObject.getClass(), messages);
 
         return null;
-    }
-
-    public
-    String getPrimaryBgColor()
-    {
-        return colorPatternService.getCssColorFor(getTopName());
     }
 
     public final
@@ -131,8 +121,9 @@ class BasicFormBasedExecution extends BasePage
         var result = procBuilder.ignoreExitStatus().run();
         var exitValue = result.getExitValue();
 
-        out.println("\nExit status ");
+        out.print("\nExit status ");
         out.print(exitValue);
+        out.print(exitValue == 0 ? " (Success)":" (FAILURE)");
 
         out.flush();
         writer.flush();

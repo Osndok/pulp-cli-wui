@@ -1,6 +1,7 @@
 package com.github.osndok.pulp.cli.wui.base;
 
 import com.github.osndok.pulp.cli.wui.model.HelpDocs;
+import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
 import com.github.osndok.pulp.cli.wui.services.HelpDocsService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.OnEvent;
@@ -39,6 +40,10 @@ class BasePage
     private
     ComponentResources componentResources;
 
+    @Inject
+    private
+    ColorPatternService colorPatternService;
+
     @OnEvent("activate")
     public final
     void onActivateBasePage()
@@ -70,4 +75,11 @@ class BasePage
     {
         return subCommandChain;
     }
+
+    public
+    String getPrimaryBgColor()
+    {
+        return colorPatternService.getCssColorFor(getTopName());
+    }
+
 }
