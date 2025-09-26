@@ -1,9 +1,11 @@
 package com.github.osndok.pulp.cli.wui.pages.pulp.rpm.remote;
 
 import com.github.osndok.pulp.cli.wui.base.BasicFormBasedExecution;
+import com.github.osndok.pulp.cli.wui.model.BooleanEnum;
 import com.github.osndok.pulp.cli.wui.model.FileOrContents;
 import org.apache.tapestry5.beaneditor.Validate;
 
+// Todo: support the 'remote' option: --type [rpm|uln]? (must come between 'remote' and 'create' :(
 public
 class RpmRemoteCreate extends BasicFormBasedExecution
 {
@@ -27,7 +29,7 @@ class RpmRemoteCreate extends BasicFormBasedExecution
         public String sles_auth_token;
         public Double sock_connect_timeout;
         public Double sock_read_timeout;
-        public Boolean tls_validation;
+        public BooleanEnum tls_validation;
         public Double total_timeout;
         public String username;
     }
@@ -47,13 +49,5 @@ class RpmRemoteCreate extends BasicFormBasedExecution
     Object getCommandObject()
     {
         return command;
-    }
-
-    @Override
-    public
-    Class getNextPage()
-    {
-        // TODO: Land them in the rpm-list view
-        return RpmRemoteCreate.class;
     }
 }

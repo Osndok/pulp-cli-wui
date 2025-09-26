@@ -12,7 +12,6 @@ import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.commons.services.PropertyAccess;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.util.TextStreamResponse;
 import org.buildobjects.process.ProcBuilder;
 import org.slf4j.Logger;
 
@@ -24,7 +23,6 @@ public abstract
 class BasicFormBasedExecution
 {
     public abstract Object getCommandObject();
-    public abstract Class getNextPage();
 
     @Inject
     private
@@ -113,6 +111,12 @@ class BasicFormBasedExecution
                 .withErrorStream(outputStream)
                 .withArgs(subCommandChain);
 
+        for (String s : subCommandChain)
+        {
+            out.print(' ');
+            out.print(s);
+        }
+
         var commandObject = getCommandObject();
         log.info("onSuccess() w/ subCommandChain: {} & commandObject:{}", subCommandChain, commandObject);
         var adapter = propertyAccess.getAdapter(commandObject);
@@ -126,8 +130,17 @@ class BasicFormBasedExecution
             var transformed = "--" + propertyName.replace("_", "-");
             log.debug("{}: {} {}", propertyName, transformed, value);
 
-            // TODO: we need something more elaborate to transform "stuff" into string values for CLI execution
             String string = value.toString();
+            //var type = adapter.getPropertyAdapter(propertyName).getType();
+
+            // TODO: we need something more elaborate to transform "stuff" into string values for CLI execution
+            if (value instanceof Enum)
+            {
+                if (string != null && string.startsWith("_"))
+                {
+                    string = string.substring(1);
+                }
+            }
 
             procBuilder.withArg(transformed);
             procBuilder.withArg(string);
@@ -136,8 +149,6 @@ class BasicFormBasedExecution
             out.print(' ');
             out.print(string);
         }
-
-        //???: return getNextPage();
 
         out.println("\n");
         out.flush();
