@@ -5,15 +5,19 @@
   <title>${topName}</title>
   <meta charset="utf-8"/>
 </head>
-<body style="margin:0;font-family:Arial,Helvetica,sans-serif;padding:1em;">
+<body style="margin:0;font-family:Arial,Helvetica,sans-serif;">
 
-    <!-- TODO: Let's have a horizontal banner that has the background color of our topName -->
+    <div style="padding:14px 12px;font-weight:700;font-size:16px;background:${primaryBgColor};">
+       ${topName}
+    </div>
 
-    <pre>
-        ${helpDocs.mainBody}
-    </pre>
+    <div style="padding:1em;">
+        <pre>
+            ${helpDocs.mainBody}
+        </pre>
 
-    <t:beaneditform object="commandObject" model="beanModel"/>
+        <t:beaneditform object="commandObject" model="beanModel"/>
+    </div>
 
 </body>
 </html>

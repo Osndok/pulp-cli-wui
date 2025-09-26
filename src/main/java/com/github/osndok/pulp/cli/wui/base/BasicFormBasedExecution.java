@@ -1,6 +1,7 @@
 package com.github.osndok.pulp.cli.wui.base;
 
 import com.github.osndok.pulp.cli.wui.model.HelpDocs;
+import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
 import com.github.osndok.pulp.cli.wui.services.HelpDocsService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.annotations.Property;
@@ -56,7 +57,7 @@ class BasicFormBasedExecution
 
     @Inject
     private
-    Messages messages;
+    ColorPatternService colorPatternService;
 
     public final
     Object onActivate()
@@ -66,11 +67,15 @@ class BasicFormBasedExecution
         subCommandChain = Arrays.stream(segments, 1, segments.length)
                 .map(String::toLowerCase)
                 .toArray(String[]::new);
+        topName = subCommandChain[subCommandChain.length-1];
 
         log.debug("onActivate(): object: {} ", getCommandObject());
 
         var commandObject = getCommandObject();
         helpDocs = helpDocsService.getHelpDocsFor(subCommandChain);
+
+        // Any way to get our sub-page's messages, instead of ours?
+        var messages = componentResources.getMessages();
 
         // Ordinarily, the beanEditForm would automatically pull the class from the binding
         // channel, but since we have it as a generic Object here, we have to "manually"
@@ -78,6 +83,12 @@ class BasicFormBasedExecution
         beanModel = beanModelSource.createEditModel(commandObject.getClass(), messages);
 
         return null;
+    }
+
+    public
+    String getPrimaryBgColor()
+    {
+        return colorPatternService.getCssColorFor(topName);
     }
 
     public final
