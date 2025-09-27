@@ -19,8 +19,15 @@
         <t:grid source="gridDataSource" row="row" model="beanModel" overrides="actionOverrides"/>
     </div>
 
-   <t:block id="actionCell">
+   <t:block id="singleActionCell">
      <t:eventlink t:event="${action}" t:context="prop:actionContext">${action}</t:eventlink>
+   </t:block>
+
+   <t:block id="actionsPopupCell">
+        <t:form>
+            <t:hidden value="row"/>
+            <t:select model="actions" value="action" onchange="this.form.submit()"/>
+        </t:form>
    </t:block>
 
 </body>

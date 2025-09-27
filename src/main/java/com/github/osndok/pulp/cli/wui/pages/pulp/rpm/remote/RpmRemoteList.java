@@ -25,26 +25,17 @@ class RpmRemoteList extends BasicJsonGrid
 
     @Override
     public
+    Object performAction(final String action, final JSONObject object)
+    {
+        var pulp_href = object.get("pulp_href");
+        return new TextStreamResponse("text/plain", "todo: redirect to: "+action+" "+pulp_href);
+    }
+
+    // unused when using drop-down actions
+    @Override
+    public
     Object getActionContext(final JSONObject object)
     {
         return object.get("pulp_href");
-    }
-
-    public
-    Object onShow(String pulp_href)
-    {
-        return new TextStreamResponse("text/plain", "todo: redirect to: show "+pulp_href);
-    }
-
-    public
-    Object onUpdate(String pulp_href)
-    {
-        return new TextStreamResponse("text/plain", "todo: redirect to: update "+pulp_href);
-    }
-
-    public
-    Object onDestroy(String pulp_href)
-    {
-        return new TextStreamResponse("text/plain", "todo: redirect to: destroy "+pulp_href);
     }
 }

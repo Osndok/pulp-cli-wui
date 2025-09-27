@@ -12,23 +12,31 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.buildobjects.process.ProcBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract
 class BasicJsonGrid extends BasePage
 {
-    @Inject
-    private Logger log;
+    private static final
+    Logger log = LoggerFactory.getLogger(BasicJsonGrid.class);
 
     public abstract
     List<String> getFieldOrder();
 
+    // TODO: Could this work [better?] as an Enum instead of a collection of strings?
     public abstract
     List<String> getActions();
 
+    public abstract
+    Object performAction(String action, JSONObject object);
+
+    // If using individual action links, this gives the opportunity to specify the desired context
+    // this will likely go away soon, but not quite deprecated?!?!
     public abstract
     Object getActionContext(JSONObject object);
 
@@ -57,7 +65,20 @@ class BasicJsonGrid extends BasePage
 
     @Inject
     private
-    Block actionCell;
+    Block singleActionCell;
+
+    @Inject
+    private
+    Block actionsPopupCell;
+
+    public
+    boolean isEachActionListedIndividually()
+    {
+        // if true, then each action will be laid out in its own cell
+        // if false, a drop-down menu will be rendered to select from the (many) possible actions
+        // the intent is for pages not wanting the default behavior to override this method
+        return false;
+    }
 
     @OnEvent("activate")
     public final
@@ -70,9 +91,17 @@ class BasicJsonGrid extends BasePage
 
         // Create the bean model
         var fieldsAndActions = new ArrayList<>(getFieldOrder());
-        fieldsAndActions.addAll(actions);
 
-        beanModel = new JsonBeanModel(fieldsAndActions, actions, messages);
+        if (isEachActionListedIndividually())
+        {
+            fieldsAndActions.addAll(actions);
+            beanModel = new JsonBeanModel(fieldsAndActions, actions, messages);
+        }
+        else
+        {
+            fieldsAndActions.add("actions");
+            beanModel = new JsonBeanModel(fieldsAndActions, Set.of("actions"), messages);
+        }
     }
 
     private
@@ -110,14 +139,25 @@ class BasicJsonGrid extends BasePage
                 {
                     return null;
                 }
+                if (s.equals("actionsCell"))
+                {
+                    return actionsPopupCell;
+                }
                 var actionOrPropertyName = s.substring(0, s.length() - "Cell".length());
                 if (!actions.contains(actionOrPropertyName))
                 {
                     return null;
                 }
                 action = actionOrPropertyName; // UGLY SIDE-EFFECT HACK...
-                return actionCell;
+                return singleActionCell;
             }
         };
+    }
+
+    public
+    Object onSuccess()
+    {
+        log.info("onSuccess(): {} / {}", action, row);
+        return performAction(action, row);
     }
 }

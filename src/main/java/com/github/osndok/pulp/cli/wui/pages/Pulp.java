@@ -124,7 +124,10 @@ class Pulp
             max = Math.max(max, subCommand.length());
         }
 
-        return (max*3/4) + "em";
+        var ems = (max*3/4);
+        ems = Math.max(ems, 4);
+
+        return  ems + "em";
     }
 
     public
