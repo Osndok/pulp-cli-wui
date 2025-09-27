@@ -23,7 +23,16 @@
           using the current subCommand value.
         -->
         <t:loop source="helpDocs.subCommands" value="subCommand">
-          <a href="${subCommandLink}" title="${subCommand}" target="${contentFrame}" style="text-decoration:none;color:#222;display:block;padding:4px 0;background: ${subCommandBgColor};margin-bottom: 5px;margin-left: 5px;">
+          <a href="${subCommandLink}" title="${subCommand}" target="${contentFrame}"
+           style="text-decoration:none;
+                  color:#222;
+                  display:block;
+                  padding:4px 0;
+                  background: ${subCommandBgColor};
+                  margin-bottom: 5px;
+                  margin-left: 5px;
+                  border-top-left-radius: 10px;
+                  border-bottom-left-radius: 10px;">
             <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;">
               <div style="flex:1;font-size:14px;">
                 ${subCommand}
