@@ -16,19 +16,15 @@
             ${helpDocs.mainBody}
         </pre>
 
-        <t:grid source="gridDataSource" row="row" model="beanModel" overrides="actionOverrides"/>
+        <t:grid source="gridDataSource" row="row" model="beanModel">
+            <p:actionsCell>
+                <t:form>
+                    <t:hidden value="row"/>
+                    <t:select model="actionStrings" value="action" onchange="this.form.submit()"/>
+                </t:form>
+            </p:actionsCell>
+        </t:grid>
     </div>
-
-   <t:block id="singleActionCell">
-     <t:eventlink t:event="${action}" t:context="prop:actionContext">${action}</t:eventlink>
-   </t:block>
-
-   <t:block id="actionsPopupCell">
-        <t:form>
-            <t:hidden value="row"/>
-            <t:select model="actions" value="action" onchange="this.form.submit()"/>
-        </t:form>
-   </t:block>
 
 </body>
 </html>
