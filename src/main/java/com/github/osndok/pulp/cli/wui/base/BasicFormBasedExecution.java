@@ -68,7 +68,7 @@ class BasicFormBasedExecution extends BasePage
         var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         var out = new PrintWriter(writer);
 
-        out.print("Getting ready to execute:\npulp");
+        out.print("\n$ pulp");
         var procBuilder = new ProcBuilder("pulp")
                 // TODO: We should capture the stdout separately, and parse or beautify the json.
                 .withOutputStream(outputStream)
