@@ -31,6 +31,8 @@
                   background: ${subCommandBgColor};
                   margin-bottom: 5px;
                   margin-left: 5px;
+                  border: 1px solid gray;
+                  border-right: none;
                   border-top-left-radius: 10px;
                   border-bottom-left-radius: 10px;">
             <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;">
