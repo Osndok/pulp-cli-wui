@@ -10,8 +10,8 @@
   <div style="display:flex;height:100vh;">
 
     <!-- Left thin navigation strip -->
-    <nav style="width:${leftNavWidth};background:${primaryBgColor};border-right:1px solid #ddd;box-sizing:border-box;display:flex;flex-direction:column;">
-      <div style="padding:14px 12px;font-weight:700;font-size:16px;border-bottom:1px solid #eaeaea;">
+    <nav style="width:${leftNavWidth};background:${primaryBgColor};display:flex;flex-direction:column;">
+      <div style="padding:14px 12px;font-weight:700;font-size:16px;">
         ${topName}
       </div>
 
@@ -23,9 +23,8 @@
           using the current subCommand value.
         -->
         <t:loop source="helpDocs.subCommands" value="subCommand">
-          <a href="${subCommandLink}" title="${subCommand}" target="${contentFrame}" style="text-decoration:none;color:#222;display:block;padding:4px 0;background: ${subCommandBgColor};">
-            <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(0,0,0,0.04);">
-
+          <a href="${subCommandLink}" title="${subCommand}" target="${contentFrame}" style="text-decoration:none;color:#222;display:block;padding:4px 0;background: ${subCommandBgColor};margin-bottom: 5px;margin-left: 5px;">
+            <div style="display:flex;align-items:center;padding:10px 12px;user-select:none;">
               <div style="flex:1;font-size:14px;">
                 ${subCommand}
               </div>
