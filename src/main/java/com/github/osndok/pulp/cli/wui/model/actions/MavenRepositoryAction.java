@@ -1,15 +1,18 @@
 package com.github.osndok.pulp.cli.wui.model.actions;
 
+import com.github.osndok.pulp.cli.wui.pages.pulp.maven.repository.MavenRepositoryDestroy;
+import com.github.osndok.pulp.cli.wui.pages.pulp.maven.repository.MavenRepositoryShow;
+
 public
 enum MavenRepositoryAction implements ActionEnum
 {
     add_cached_content,
     content_list,
-    destroy,
+    destroy(MavenRepositoryDestroy.class),
     label_set,
     label_show,
     label_unset,
-    show,
+    show(MavenRepositoryShow.class),
     task_list,
     update,
     version_destroy,
