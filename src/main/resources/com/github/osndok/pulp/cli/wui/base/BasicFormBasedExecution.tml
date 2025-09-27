@@ -16,7 +16,7 @@
             ${helpDocs.mainBody}
         </pre>
 
-        <t:beaneditform object="commandObject" model="beanModel"/>
+        <t:beaneditform object="commandObject" model="beanModel" submitLabel="prop:topName"/>
     </div>
 
 </body>
