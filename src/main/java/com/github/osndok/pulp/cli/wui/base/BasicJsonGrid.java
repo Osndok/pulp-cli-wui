@@ -3,22 +3,21 @@ package com.github.osndok.pulp.cli.wui.base;
 import com.github.osndok.pulp.cli.wui.model.JsonBeanModel;
 import com.github.osndok.pulp.cli.wui.model.actions.ActionEnum;
 import org.apache.tapestry5.Block;
-import org.apache.tapestry5.PropertyOverrides;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.beanmodel.BeanModel;
 import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.internal.services.LinkSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.PageRenderLinkSource;
+import org.apache.tapestry5.util.TextStreamResponse;
 import org.buildobjects.process.ProcBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract
 class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
@@ -35,11 +34,11 @@ class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
     // If using individual action links, this gives the opportunity to specify the desired context
     // this will likely go away soon, but not quite deprecated?!?!
     public abstract
-    String getActionIdentifier(JSONObject object);
+    String getActionSubjectIdentifier(JSONObject object);
 
     @Property
     private
-    List<String> actionStrings = new ArrayList<>();
+    Map<String,TAction> actionsByName = new LinkedHashMap<>();
 
     @Property
     private
@@ -48,6 +47,10 @@ class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
     @Inject
     private
     Messages messages;
+
+    @Inject
+    private
+    PageRenderLinkSource pageRenderLinkSource;
 
     @Property
     private
@@ -71,7 +74,7 @@ class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
     {
         for (TAction enumConstant : getActions().getEnumConstants())
         {
-            actionStrings.add(((Enum) enumConstant).name());
+            actionsByName.put(((Enum) enumConstant).name(), enumConstant);
         }
 
         var json = executeCliCommand();
@@ -85,6 +88,12 @@ class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
         beanModel = new JsonBeanModel(fieldsAndActions, Set.of("actions"), messages);
     }
 
+    public
+    List<String> getActionNames()
+    {
+        return new ArrayList<>(actionsByName.keySet());
+    }
+
     private
     String executeCliCommand()
     {
@@ -94,17 +103,21 @@ class BasicJsonGrid<TAction extends ActionEnum> extends BasePage
         return procBuilder.run().getOutputString();
     }
 
-    public final
-    Object getActionIdentifier()
-    {
-        return getActionIdentifier(row);
-    }
-
     public
     Object onSuccess()
     {
-        log.info("onSuccess(): {} / {}", action, row);
-        //return performAction(action, row);
-        return null;
+        var action = actionsByName.get(this.action);
+        var actionPageClass = action.getActionPageClass();
+        var id = getActionSubjectIdentifier(row);
+        log.info("onSuccess(): {}, {}, {}", action, actionPageClass, id);
+
+        if (actionPageClass == null)
+        {
+            var actionEnumClassName = getActions().getSimpleName();
+            var message = String.format("TODO: %s.%s has no implemented page/handler", actionEnumClassName, action);
+            return new TextStreamResponse("text/plain", message);
+        }
+
+        return pageRenderLinkSource.createPageRenderLinkWithContext(actionPageClass, id);
     }
 }

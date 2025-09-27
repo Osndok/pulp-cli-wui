@@ -20,7 +20,7 @@
             <p:actionsCell>
                 <t:form>
                     <t:hidden value="row"/>
-                    <t:select model="actionStrings" value="action" onchange="this.form.submit()"/>
+                    <t:select model="actionNames" value="action" onchange="this.form.submit()"/>
                 </t:form>
             </p:actionsCell>
         </t:grid>

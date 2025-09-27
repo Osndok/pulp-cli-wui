@@ -25,7 +25,7 @@ class RpmRemoteList extends BasicJsonGrid<RpmRemoteAction>
 
     @Override
     public
-    String getActionIdentifier(final JSONObject object)
+    String getActionSubjectIdentifier(final JSONObject object)
     {
         return object.getString("pulp_href");
     }
