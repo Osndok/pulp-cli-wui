@@ -42,7 +42,7 @@ class RpmRemoteCreate extends BasicFormBasedExecution
         streamed
     }
 
-    private Object command = new Command();
+    private Command command = new Command();
 
     @Override
     public
