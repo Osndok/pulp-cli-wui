@@ -42,6 +42,9 @@ class BasicFormBasedExecution extends BasePage
     private
     BeanModelSource beanModelSource;
 
+    private
+    boolean preview = false;
+
     public final
     Object onActivate()
     {
@@ -118,6 +121,12 @@ class BasicFormBasedExecution extends BasePage
         out.flush();
         writer.flush();
 
+        if (preview)
+        {
+            return toStreamResponse(outputStream);
+        }
+
+        // EXECUTE
         var result = procBuilder.ignoreExitStatus().run();
         var exitValue = result.getExitValue();
 
@@ -128,21 +137,33 @@ class BasicFormBasedExecution extends BasePage
         out.flush();
         writer.flush();
 
+        return toStreamResponse(outputStream);
+    }
+
+    private static
+    StreamResponse toStreamResponse(final ByteArrayOutputStream outputStream)
+    {
         byte[] data = outputStream.toByteArray();
 
-        return new StreamResponse() {
-            public String getContentType() {
+        return new StreamResponse()
+        {
+            public
+            String getContentType()
+            {
                 return "text/plain; charset=UTF-8";
             }
 
-            public void prepareResponse(Response response) {
+            public
+            void prepareResponse(Response response)
+            {
                 // Optionally set headers
             }
 
-            public InputStream getStream() throws IOException {
+            public
+            InputStream getStream() throws IOException
+            {
                 return new ByteArrayInputStream(data);
             }
         };
-
     }
 }
