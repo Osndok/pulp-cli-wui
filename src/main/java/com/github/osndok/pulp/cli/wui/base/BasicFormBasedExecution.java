@@ -1,8 +1,5 @@
 package com.github.osndok.pulp.cli.wui.base;
 
-import com.github.osndok.pulp.cli.wui.model.HelpDocs;
-import com.github.osndok.pulp.cli.wui.services.ColorPatternService;
-import com.github.osndok.pulp.cli.wui.services.HelpDocsService;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
@@ -11,10 +8,12 @@ import org.apache.tapestry5.beanmodel.services.BeanModelSource;
 import org.apache.tapestry5.commons.services.PropertyAccess;
 import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.json.JSONObject;
 import org.buildobjects.process.ProcBuilder;
 import org.slf4j.Logger;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public abstract
@@ -68,13 +67,13 @@ class BasicFormBasedExecution extends BasePage
         log.debug("onSuccess(): {}", subCommandChain);
 
         var outputStream = new ByteArrayOutputStream();
+        var commandStdout = new ByteArrayOutputStream();
         var writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         var out = new PrintWriter(writer);
 
         out.print("\n$ pulp");
         var procBuilder = new ProcBuilder("pulp")
-                // TODO: We should capture the stdout separately, and parse or beautify the json.
-                .withOutputStream(outputStream)
+                .withOutputStream(commandStdout)
                 .withErrorStream(outputStream)
                 .withArgs(subCommandChain);
 
@@ -130,7 +129,9 @@ class BasicFormBasedExecution extends BasePage
         var result = procBuilder.ignoreExitStatus().run();
         var exitValue = result.getExitValue();
 
-        out.print("\nExit status ");
+        transferOrTransformStdout(commandStdout, out);
+
+        out.print("\n\nExit status ");
         out.print(exitValue);
         out.print(exitValue == 0 ? " (Success)":" (FAILURE)");
 
@@ -138,6 +139,40 @@ class BasicFormBasedExecution extends BasePage
         writer.flush();
 
         return toStreamResponse(outputStream);
+    }
+
+    private
+    void transferOrTransformStdout(
+            final ByteArrayOutputStream stdout,
+            final PrintWriter out
+    )
+    {
+        byte[] bytes = stdout.toByteArray();
+
+        if (bytes.length == 0)
+        {
+            log.debug("no stdout");
+            return;
+        }
+
+        if (bytes[0] == '{')
+        {
+            log.debug("beautifying stdout, found to be a json object");
+            var json = new String(bytes, Charset.defaultCharset());
+            try
+            {
+                new JSONObject(json).prettyPrint(out);
+            }
+            catch (Exception e)
+            {
+                log.debug("not json?", e);
+                out.print(json);
+            }
+            return;
+        }
+
+        var probablyTextual = new String(bytes, Charset.defaultCharset());
+        out.print(probablyTextual);
     }
 
     private static
