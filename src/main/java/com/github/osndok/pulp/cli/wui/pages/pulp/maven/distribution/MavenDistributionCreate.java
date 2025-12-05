@@ -18,12 +18,16 @@ class MavenDistributionCreate extends BasicFormBasedExecution
         public String labels;
     }
 
-    private Command command = new Command();
+    private Command command;
 
     @Override
     public
     Object getCommandObject()
     {
+        if (command == null)
+        {
+            command = new Command();
+        }
         return command;
     }
 }

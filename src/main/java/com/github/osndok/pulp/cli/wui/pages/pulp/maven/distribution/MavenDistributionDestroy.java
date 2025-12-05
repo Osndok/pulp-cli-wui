@@ -13,18 +13,23 @@ class MavenDistributionDestroy extends BasicFormBasedExecution
         public String distribution;
     }
 
-    private Command command = new Command();
+    private Command command;
 
     @Override
     public
     Object getCommandObject()
     {
+        if (command == null)
+        {
+            command = new Command();
+        }
         return command;
     }
 
     public
     void onActivate(String pulp_href)
     {
+        command = new Command();
         command.href = pulp_href;
     }
 }

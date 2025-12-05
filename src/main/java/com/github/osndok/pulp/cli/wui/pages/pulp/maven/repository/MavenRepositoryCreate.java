@@ -18,12 +18,16 @@ class MavenRepositoryCreate extends BasicFormBasedExecution
         public String name;
     }
 
-    private Command command = new Command();
+    private Command command;
 
     @Override
     public
     Object getCommandObject()
     {
+        if (command == null)
+        {
+            command = new Command();
+        }
         return command;
     }
 }

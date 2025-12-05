@@ -13,18 +13,23 @@ class RpmRemoteDestroy extends BasicFormBasedExecution
         public String remote;
     }
 
-    private Command command = new Command();
+    private Command command;
 
     @Override
     public
     Object getCommandObject()
     {
+        if (command == null)
+        {
+            command = new Command();
+        }
         return command;
     }
 
     public
     void onActivate(String pulp_href)
     {
+        command = new Command();
         command.href = pulp_href;
     }
 }
