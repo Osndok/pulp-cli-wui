@@ -61,6 +61,14 @@ class BasicFormBasedExecution extends BasePage
     }
 
     public final
+    Object onSelectedFromPreview()
+    {
+        log.debug("onSelectedFromPreview()");
+        preview = true;
+        return null;
+    }
+
+    public final
     Object onSuccess() throws Exception
     {
         var subCommandChain = getSubCommandChain();

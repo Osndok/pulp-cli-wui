@@ -20,7 +20,15 @@
             ${helpDocs.mainBody}
         </pre>
 
-        <t:beaneditform object="commandObject" model="beanModel" submitLabel="prop:topName"/>
+        <t:form t:id="beanEditForm">
+          <t:beaneditor t:id="beanEditor"
+                        object="commandObject"
+                        model="beanModel" />
+
+          <t:submit t:id="submit" value="prop:topName" />
+          <t:submit t:id="preview" value="preview" class="btn btn-secondary" style="margin-left:1em" />
+        </t:form>
+
     </div>
 
 </body>
