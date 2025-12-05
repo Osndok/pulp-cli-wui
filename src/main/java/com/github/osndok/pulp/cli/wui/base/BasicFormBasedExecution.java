@@ -15,10 +15,13 @@ import org.slf4j.Logger;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public abstract
 class BasicFormBasedExecution extends BasePage
 {
+    private static final long TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(1);
+
     public abstract Object getCommandObject();
 
     @Inject
@@ -81,6 +84,7 @@ class BasicFormBasedExecution extends BasePage
 
         out.print("\n$ pulp");
         var procBuilder = new ProcBuilder("pulp")
+                .withTimeoutMillis(TIMEOUT_MILLIS)
                 .withOutputStream(commandStdout)
                 .withErrorStream(outputStream)
                 .withArgs(subCommandChain);
